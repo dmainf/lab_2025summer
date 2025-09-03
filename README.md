@@ -12,4 +12,4 @@ dist_churn_and_ContractType_MonthltCharge_simple.py
 
 lib
 
-telecom_churn_original.py
+telecom_churn_original.py  タスク1とタスク2をやってた人の統計部分
