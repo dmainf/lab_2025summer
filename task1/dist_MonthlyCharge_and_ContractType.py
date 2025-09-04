@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from scipy import stats
 
 # Load data
-df_raw = pd.read_csv('WA_Fn-UseC_-Telco-Customer-Churn.csv')
+df_raw = pd.read_csv('../WA_Fn-UseC_-Telco-Customer-Churn.csv')
 df = df_raw.copy()
 
 print("=== Essential Contract-Charges Correlation Analysis ===")

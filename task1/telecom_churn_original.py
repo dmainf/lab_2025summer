@@ -179,7 +179,7 @@ class Data:
 # In[3]:
 
 
-data_file = 'WA_Fn-UseC_-Telco-Customer-Churn.csv'
+data_file = '../WA_Fn-UseC_-Telco-Customer-Churn.csv'
 extension = 'csv'
 
 data = Data()
@@ -525,29 +525,36 @@ print(churn_summary[['Tenure','MonthlyCharges','TotalCharges']].mean())
 
 def Numerical_distribution(df_cal,feature):
     """ Distribution of numerical variable based on target variable"""
-    fig = plt.figure(figsize=(15,10))
-
-    plt.subplot(2,1,1)
+    
+    # First plot: Original distribution (KDE only)
+    fig1 = plt.figure(figsize=(12,6))
     ax = sns.kdeplot(df_cal[feature]
                      , color = 'g'
                      , shade = True)
-
     title_str = "Original " +feature + " Distribution"
     plt.title(title_str)
-
-    plt.subplot(2,1,2)
-    ax = sns.kdeplot(df_cal.loc[(df_cal['Churn']==1),feature]
-                     , color = 'g'
-                     , shade = True
-                     , label='Chrun')
-
-    ax = sns.kdeplot(df_cal.loc[(df_cal['Churn']==0) ,feature]
-                     , color = 'b'
-                     , shade = True
-                     , label='No chrun')
-
-    title_str = feature + " Distribution: Churn vs No churn"
-    plt.title(title_str)
+    plt.show()
+    
+    # Second plot: Churn vs No churn distribution (histogram + KDE)
+    fig2, (ax1, ax2) = plt.subplots(2, 1, figsize=(12,10))
+    
+    # Histogram
+    churn_data = df_cal.loc[df_cal['Churn']==1, feature]
+    no_churn_data = df_cal.loc[df_cal['Churn']==0, feature]
+    
+    ax1.hist(churn_data, bins=30, alpha=0.7, color='g', density=True, label='Churn')
+    ax1.hist(no_churn_data, bins=30, alpha=0.7, color='b', density=True, label='No churn')
+    ax1.set_title(feature + " Histogram: Churn vs No churn")
+    ax1.set_ylabel('Density')
+    ax1.legend()
+    
+    # KDE
+    sns.kdeplot(churn_data, color='g', shade=True, label='Churn', ax=ax2)
+    sns.kdeplot(no_churn_data, color='b', shade=True, label='No churn', ax=ax2)
+    ax2.set_title(feature + " KDE: Churn vs No churn")
+    ax2.legend()
+    
+    plt.tight_layout()
     plt.show()
 
 
