@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>カスタマーサポート介入システム - test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem 20px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .control-btn {
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .control-btn.active {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .btn-urgent {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-important {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-normal {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn-all {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 2rem;
+        }
+        
+        .intervention-queue {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        
+        .queue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .queue-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+        }
+        
+        .queue-count {
+            background: #dc3545;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .intervention-item {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .intervention-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .intervention-item.urgent {
+            border-color: #dc3545;
+            background: linear-gradient(135deg, #fff5f5, #ffffff);
+        }
+        
+        .intervention-item.important {
+            border-color: #ffc107;
+            background: linear-gradient(135deg, #fffbf0, #ffffff);
+        }
+        
+        .intervention-item.normal {
+            border-color: #17a2b8;
+            background: linear-gradient(135deg, #f0f8ff, #ffffff);
+        }
+        
+        .intervention-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .customer-info {
+            flex: 1;
+        }
+        
+        .customer-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+        }
+        
+        .customer-id {
+            color: #666;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .risk-score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 8px;
+            min-width: 60px;
+        }
+        
+        .risk-score.high {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .risk-score.medium {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .risk-score.low {
+            background: #28a745;
+            color: white;
+        }
+        
+        .intervention-details {
+            margin-bottom: 1rem;
+        }
+        
+        .intervention-type {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .intervention-reason {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .intervention-timeline {
+            color: #dc3545;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .intervention-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .action-btn.primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .action-btn.success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .action-btn.info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .action-btn.secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .quick-actions {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        
+        .quick-actions h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        
+        .quick-action-btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-weight: 500;
+        }
+        
+        .quick-action-btn:hover {
+            transform: translateX(3px);
+        }
+        
+        .recent-activity {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            font-size: 1.2rem;
+            margin-right: 0.75rem;
+            width: 30px;
+            text-align: center;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-text {
+            font-size: 0.9rem;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+        
+        .activity-time {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+        }
+        
+        .close {
+            font-size: 2rem;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .close:hover {
+            color: #333;
+        }
+        
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                order: -1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .control-panel {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .intervention-actions {
+                flex-direction: column;
+            }
+            
+            .action-btn {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← ホームに戻る</a>
+        
+        <div class="header">
+            <h1>カスタマーサポート介入システム</h1>
+            <p class="subtitle">リアルタイム監視とプロアクティブな顧客対応</p>
+        </div>
+        
+        <div class="control-panel">
+            <button class="control-btn btn-urgent active" onclick="filterByPriority('urgent')">
+                🚨 緊急対応 (5)
+            </button>
+            <button class="control-btn btn-important" onclick="filterByPriority('important')">
+                ⚠️ 重要対応 (12)
+            </button>
+            <button class="control-btn btn-normal" onclick="filterByPriority('normal')">
+                ℹ️ 通常対応 (28)
+            </button>
+            <button class="control-btn btn-all" onclick="filterByPriority('all')">
+                📋 全件表示 (45)
+            </button>
+        </div>
+        
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value" style="color: #dc3545;">5</div>
+                <div class="stat-label">緊急対応待ち</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" style="color: #28a745;">23</div>
+                <div class="stat-label">本日対応完了</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" style="color: #667eea;">89%</div>
+                <div class="stat-label">解約防止成功率</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" style="color: #ffc107;">2.3分</div>
+                <div class="stat-label">平均対応時間</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" style="color: #17a2b8;">156</div>
+                <div class="stat-label">今月介入回数</div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="intervention-queue">
+                <div class="queue-header">
+                    <div class="queue-title">介入キュー</div>
+                    <div class="queue-count" id="queueCount">5</div>
+                </div>
+                
+                <div id="interventionList">
+                    <div class="intervention-item urgent" data-priority="urgent">
+                        <div class="intervention-header">
+                            <div class="customer-info">
+                                <div class="customer-name">田中 太郎</div>
+                                <div class="customer-id">ID: USER001234</div>
+                            </div>
+                            <div class="risk-score high">92</div>
+                        </div>
+                        <div class="intervention-details">
+                            <div class="intervention-type">緊急電話対応</div>
+                            <div class="intervention-reason">
+                                • 3日連続ログインなし<br>
+                                • 料金ページを複数回閲覧<br>
+                                • サポートに解約関連問い合わせ
+                            </div>
+                            <div class="intervention-timeline">⏰ 8時間経過 - 即座に対応必要</div>
+                        </div>
+                        <div class="intervention-actions">
+                            <button class="action-btn primary" onclick="startCall('田中 太郎')">電話発信</button>
+                            <button class="action-btn success" onclick="sendEmail('田中 太郎')">メール送信</button>
+                            <button class="action-btn info" onclick="viewHistory('田中 太郎')">履歴確認</button>
+                            <button class="action-btn secondary" onclick="assignAgent('田中 太郎')">担当者割当</button>
+                        </div>
+                    </div>
+                    
+                    <div class="intervention-item urgent" data-priority="urgent">
+                        <div class="intervention-header">
+                            <div class="customer-info">
+                                <div class="customer-name">佐藤 花子</div>
+                                <div class="customer-id">ID: USER005678</div>
+                            </div>
+                            <div class="risk-score high">87</div>
+                        </div>
+                        <div class="intervention-details">
+                            <div class="intervention-type">プラン変更提案</div>
+                            <div class="intervention-reason">
+                                • 利用頻度50%低下<br>
+                                • 価格敏感度スコア高<br>
+                                • 競合他社サイト閲覧履歴あり
+                            </div>
+                            <div class="intervention-timeline">⏰ 12時間経過 - 24時間以内に対応必要</div>
+                        </div>
+                        <div class="intervention-actions">
+                            <button class="action-btn primary" onclick="proposePlan('佐藤 花子')">プラン提案</button>
+                            <button class="action-btn success" onclick="offerDiscount('佐藤 花子')">割引提案</button>
+                            <button class="action-btn info" onclick="viewUsage('佐藤 花子')">利用状況確認</button>
+                        </div>
+                    </div>
+                    
+                    <div class="intervention-item important" data-priority="important">
+                        <div class="intervention-header">
+                            <div class="customer-info">
+                                <div class="customer-name">山田 一郎</div>
+                                <div class="customer-id">ID: USER009012</div>
+                            </div>
+                            <div class="risk-score medium">65</div>
+                        </div>
+                        <div class="intervention-details">
+                            <div class="intervention-type">エンゲージメント改善</div>
+                            <div class="intervention-reason">
+                                • 機能利用率30%に低下<br>
+                                • 学習完了率が40%低下<br>
+                                • カスタマーサポートへの問い合わせ増加
+                            </div>
+                            <div class="intervention-timeline">⏰ 2日経過 - 3日以内に対応推奨</div>
+                        </div>
+                        <div class="intervention-actions">
+                            <button class="action-btn primary" onclick="sendTutorial('山田 一郎')">チュートリアル送信</button>
+                            <button class="action-btn success" onclick="scheduleCall('山田 一郎')">相談電話予約</button>
+                            <button class="action-btn info" onclick="recommendContent('山田 一郎')">コンテンツ推奨</button>
+                        </div>
+                    </div>
+                    
+                    <div class="intervention-item normal" data-priority="normal">
+                        <div class="intervention-header">
+                            <div class="customer-info">
+                                <div class="customer-name">鈴木 次郎</div>
+                                <div class="customer-id">ID: USER003456</div>
+                            </div>
+                            <div class="risk-score low">35</div>
+                        </div>
+                        <div class="intervention-details">
+                            <div class="intervention-type">機能活用促進</div>
+                            <div class="intervention-reason">
+                                • 新機能の利用率低<br>
+                                • アップグレード対象<br>
+                                • 満足度は高い
+                            </div>
+                            <div class="intervention-timeline">⏰ 1週間以内に対応</div>
+                        </div>
+                        <div class="intervention-actions">
+                            <button class="action-btn primary" onclick="introduceFeature('鈴木 次郎')">機能紹介</button>
+                            <button class="action-btn success" onclick="proposeUpgrade('鈴木 次郎')">アップグレード提案</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <div class="quick-actions">
+                    <h3>クイックアクション</h3>
+                    <button class="quick-action-btn" style="background: #dc3545; color: white;" onclick="emergencyBroadcast()">
+                        🚨 緊急一斉対応開始
+                    </button>
+                    <button class="quick-action-btn" style="background: #ffc107; color: #212529;" onclick="generateReport()">
+                        📊 日次レポート生成
+                    </button>
+                    <button class="quick-action-btn" style="background: #28a745; color: white;" onclick="bulkAction()">
+                        📧 一括メール送信
+                    </button>
+                    <button class="quick-action-btn" style="background: #17a2b8; color: white;" onclick="updateRules()">
+                        ⚙️ 介入ルール更新
+                    </button>
+                </div>
+                
+                <div class="recent-activity">
+                    <h3>最近のアクティビティ</h3>
+                    <div class="activity-item">
+                        <div class="activity-icon" style="color: #28a745;">✅</div>
+                        <div class="activity-content">
+                            <div class="activity-text">高橋様の解約を防止</div>
+                            <div class="activity-time">5分前</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon" style="color: #667eea;">📞</div>
+                        <div class="activity-content">
+                            <div class="activity-text">松本様に電話対応完了</div>
+                            <div class="activity-time">15分前</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon" style="color: #ffc107;">⚠️</div>
+                        <div class="activity-content">
+                            <div class="activity-text">中村様の緊急アラート発生</div>
+                            <div class="activity-time">32分前</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon" style="color: #17a2b8;">📧</div>
+                        <div class="activity-content">
+                            <div class="activity-text">50名にパーソナライズメール送信</div>
+                            <div class="activity-time">1時間前</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon" style="color: #28a745;">🎯</div>
+                        <div class="activity-content">
+                            <div class="activity-text">小林様のプラン変更成功</div>
+                            <div class="activity-time">2時間前</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- モーダルウィンドウ -->
+    <div id="actionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">アクション詳細</div>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div id="modalBody">
+                <!-- 動的にコンテンツが挿入される -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentFilter = 'urgent';
+        
+        function filterByPriority(priority) {
+            currentFilter = priority;
+            
+            // ボタンのアクティブ状態を更新
+            document.querySelectorAll('.control-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // アイテムの表示/非表示を切り替え
+            const items = document.querySelectorAll('.intervention-item');
+            let visibleCount = 0;
+            
+            items.forEach(item => {
+                if (priority === 'all' || item.dataset.priority === priority) {
+                    item.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // カウンターを更新
+            document.getElementById('queueCount').textContent = visibleCount;
+        }
+        
+        function startCall(customerName) {
+            showModal('電話発信', `
+                <p><strong>${customerName}</strong>への電話を発信しています...</p>
+                <div style="margin: 2rem 0;">
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px;">
+                        <h4>通話スクリプト</h4>
+                        <ul>
+                            <li>お客様の状況確認</li>
+                            <li>サービス利用における問題点のヒアリング</li>
+                            <li>適切なソリューション提案</li>
+                            <li>継続利用のメリット説明</li>
+                        </ul>
+                    </div>
+                </div>
+                <button class="action-btn success" onclick="completeCall('${customerName}')">通話完了</button>
+            `);
+        }
+        
+        function sendEmail(customerName) {
+            showModal('メール送信', `
+                <p><strong>${customerName}</strong>へのパーソナライズメールを送信します。</p>
+                <textarea style="width: 100%; height: 200px; margin: 1rem 0; padding: 1rem; border: 1px solid #ddd; border-radius: 5px;" placeholder="メール内容をカスタマイズ...">${customerName}様
+
+いつもtestをご利用いただき、ありがとうございます。
+
+最近のご利用状況を拝見したところ、何かご不明な点やご不便をおかけしている点があるのではないかと心配しております。
+
+もしサービスに関してご質問やご要望がございましたら、いつでもお気軽にお声掛けください。お客様により良い学習体験をご提供できるよう、全力でサポートいたします。
+
+カスタマーサポートチーム</textarea>
+                <button class="action-btn primary" onclick="sendCustomEmail('${customerName}')">送信</button>
+            `);
+        }
+        
+        function viewHistory(customerName) {
+            showModal('顧客履歴', `
+                <h4>${customerName}の利用履歴</h4>
+                <div style="margin: 1rem 0;">
+                    <h5>基本情報</h5>
+                    <ul>
+                        <li>登録日: 2023年4月15日</li>
+                        <li>プラン: プレミアム</li>
+                        <li>利用期間: 8ヶ月</li>
+                    </ul>
+                    
+                    <h5>最近のアクティビティ</h5>
+                    <ul>
+                        <li>2024年1月10日: 最終ログイン</li>
+                        <li>2024年1月8日: 料金ページ閲覧</li>
+                        <li>2024年1月7日: サポートに問い合わせ</li>
+                        <li>2024年1月5日: 学習コンテンツ閲覧</li>
+                    </ul>
+                    
+                    <h5>リスクファクター</h5>
+                    <ul>
+                        <li>利用頻度: 70%減少</li>
+                        <li>エンゲージメント: 低下傾向</li>
+                        <li>サポート満足度: 3/5</li>
+                    </ul>
+                </div>
+            `);
+        }
+        
+        function showModal(title, content) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').innerHTML = content;
+            document.getElementById('actionModal').style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('actionModal').style.display = 'none';
+        }
+        
+        function completeCall(customerName) {
+            alert(`${customerName}への通話が完了しました。\nフォローアップタスクが自動作成されます。`);
+            closeModal();
+            updateActivity(`${customerName}への電話対応完了`, 'success');
+        }
+        
+        function updateActivity(text, type) {
+            const activityList = document.querySelector('.recent-activity');
+            const newActivity = document.createElement('div');
+            newActivity.className = 'activity-item';
+            
+            const icons = {
+                success: '✅',
+                call: '📞',
+                email: '📧',
+                warning: '⚠️'
+            };
+            
+            const colors = {
+                success: '#28a745',
+                call: '#667eea',
+                email: '#17a2b8',
+                warning: '#ffc107'
+            };
+            
+            newActivity.innerHTML = `
+                <div class="activity-icon" style="color: ${colors[type]};">${icons[type]}</div>
+                <div class="activity-content">
+                    <div class="activity-text">${text}</div>
+                    <div class="activity-time">たった今</div>
+                </div>
+            `;
+            
+            activityList.insertBefore(newActivity, activityList.children[1]);
+        }
+        
+        // その他のアクション関数
+        function proposePlan(customerName) {
+            alert(`${customerName}に最適なプラン変更を提案します。`);
+        }
+        
+        function offerDiscount(customerName) {
+            alert(`${customerName}に特別割引を提供します。`);
+        }
+        
+        function emergencyBroadcast() {
+            alert('緊急対応チームに一斉通知を送信しました。');
+        }
+        
+        function generateReport() {
+            alert('日次介入レポートを生成中です...');
+        }
+        
+        // モーダルの外側クリックで閉じる
+        window.onclick = function(event) {
+            const modal = document.getElementById('actionModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+        
+        // リアルタイム更新のシミュレーション
+        setInterval(function() {
+            // 新しい緊急案件の追加をシミュレート
+            if (Math.random() < 0.1) { // 10%の確率
+                console.log('New urgent intervention added');
+                // 実際のシステムでは新しいアイテムをDOMに追加
+            }
+        }, 30000); // 30秒ごと
+        
+        // 初期フィルター適用
+        filterByPriority('urgent');
+    </script>
+</body>
+</html>

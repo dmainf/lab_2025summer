@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>解約理由アンケート - test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 2rem 20px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .survey-form {
+            background: white;
+            border-radius: 10px;
+            padding: 2.5rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 2rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+        
+        .required {
+            color: #dc3545;
+        }
+        
+        .checkbox-group,
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .checkbox-item,
+        .radio-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 0.75rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .checkbox-item:hover,
+        .radio-item:hover {
+            border-color: #667eea;
+            background-color: #f8f9fa;
+        }
+        
+        .checkbox-item input,
+        .radio-item input {
+            margin-right: 0.75rem;
+            margin-top: 0.125rem;
+        }
+        
+        .checkbox-item.selected,
+        .radio-item.selected {
+            border-color: #667eea;
+            background-color: #e8f0fe;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .rating-group {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .rating-item {
+            text-align: center;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+            min-width: 60px;
+        }
+        
+        .rating-item:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .rating-item.selected {
+            background-color: #667eea;
+            color: white;
+        }
+        
+        .rating-emoji {
+            font-size: 2rem;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+        
+        .rating-text {
+            font-size: 0.8rem;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2.5rem;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .thank-you {
+            display: none;
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+        
+        .thank-you h2 {
+            color: #28a745;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        
+        .thank-you p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            color: #666;
+        }
+        
+        .final-offer {
+            background: #fff3cd;
+            border: 2px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+        
+        .final-offer h3 {
+            color: #856404;
+            margin-bottom: 1rem;
+        }
+        
+        .final-offer p {
+            color: #856404;
+            margin-bottom: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .survey-form {
+                padding: 1.5rem;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 250px;
+            }
+            
+            .rating-group {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="cancel.html" class="back-link">← 前のページに戻る</a>
+        
+        <div class="header">
+            <h1>解約理由アンケート</h1>
+            <p class="subtitle">より良いサービス提供のため、解約理由をお聞かせください</p>
+        </div>
+        
+        <form class="survey-form" id="surveyForm">
+            <div class="form-group">
+                <label>解約の主な理由を教えてください <span class="required">*</span></label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="reason1" name="reasons" value="価格が高い">
+                        <label for="reason1">価格が高すぎる</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="reason2" name="reasons" value="使用頻度が低い">
+                        <label for="reason2">使用頻度が低くなった</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="reason3" name="reasons" value="期待した効果がない">
+                        <label for="reason3">期待していた学習効果が得られない</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="reason4" name="reasons" value="操作が難しい">
+                        <label for="reason4">操作が難しい・使いにくい</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="reason5" name="reasons" value="コンテンツ不満">
+                        <label for="reason5">コンテンツの質や量に不満</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="reason6" name="reasons" value="他サービス移行">
+                        <label for="reason6">他のサービスに移行する</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="reason7" name="reasons" value="学習完了">
+                        <label for="reason7">学習目標を達成した</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="reason8" name="reasons" value="その他">
+                        <label for="reason8">その他</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>サービス利用期間はどのくらいでしたか？</label>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="period1" name="usage_period" value="1ヶ月未満">
+                        <label for="period1">1ヶ月未満</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="period2" name="usage_period" value="1-3ヶ月">
+                        <label for="period2">1〜3ヶ月</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="period3" name="usage_period" value="3-6ヶ月">
+                        <label for="period3">3〜6ヶ月</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="period4" name="usage_period" value="6ヶ月-1年">
+                        <label for="period4">6ヶ月〜1年</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="period5" name="usage_period" value="1年以上">
+                        <label for="period5">1年以上</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>サービスの満足度を教えてください</label>
+                <div class="rating-group">
+                    <div class="rating-item" data-rating="1">
+                        <span class="rating-emoji">😢</span>
+                        <span class="rating-text">非常に不満</span>
+                    </div>
+                    <div class="rating-item" data-rating="2">
+                        <span class="rating-emoji">😞</span>
+                        <span class="rating-text">不満</span>
+                    </div>
+                    <div class="rating-item" data-rating="3">
+                        <span class="rating-emoji">😐</span>
+                        <span class="rating-text">普通</span>
+                    </div>
+                    <div class="rating-item" data-rating="4">
+                        <span class="rating-emoji">😊</span>
+                        <span class="rating-text">満足</span>
+                    </div>
+                    <div class="rating-item" data-rating="5">
+                        <span class="rating-emoji">😍</span>
+                        <span class="rating-text">非常に満足</span>
+                    </div>
+                </div>
+                <input type="hidden" id="satisfaction" name="satisfaction" value="">
+            </div>
+            
+            <div class="form-group">
+                <label>改善してほしい点や追加のご意見がございましたらお聞かせください</label>
+                <textarea name="feedback" placeholder="ご自由にお書きください..."></textarea>
+            </div>
+            
+            <div class="final-offer">
+                <h3>🎁 最後のご提案</h3>
+                <p>アンケートにお答えいただいた方限定で、<strong>30日間無料延長</strong>をご利用いただけます。<br>
+                この機会に改善点を体験してみませんか？</p>
+                <button type="button" class="btn btn-primary" onclick="acceptOffer()">30日延長を利用する</button>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='cancel.html'">前のページに戻る</button>
+                <button type="submit" class="btn btn-danger">解約を完了する</button>
+            </div>
+        </form>
+        
+        <div class="thank-you" id="thankYou">
+            <h2>ありがとうございました</h2>
+            <p>貴重なご意見をお聞かせいただき、ありがとうございました。<br>
+            いただいたフィードバックは、今後のサービス改善に活用させていただきます。</p>
+            <p>解約手続きが完了いたしました。<br>
+            またのご利用をお待ちしております。</p>
+            <a href="index.html" class="btn btn-primary">ホームページに戻る</a>
+        </div>
+    </div>
+    
+    <script>
+        // チェックボックス・ラジオボタンの見た目制御
+        document.addEventListener('DOMContentLoaded', function() {
+            // チェックボックスの制御
+            const checkboxItems = document.querySelectorAll('.checkbox-item');
+            checkboxItems.forEach(item => {
+                const checkbox = item.querySelector('input[type="checkbox"]');
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        item.classList.add('selected');
+                    } else {
+                        item.classList.remove('selected');
+                    }
+                });
+            });
+            
+            // ラジオボタンの制御
+            const radioItems = document.querySelectorAll('.radio-item');
+            radioItems.forEach(item => {
+                const radio = item.querySelector('input[type="radio"]');
+                radio.addEventListener('change', function() {
+                    // 同じグループの他の項目からselectedクラスを削除
+                    const groupName = this.name;
+                    document.querySelectorAll(`input[name="${groupName}"]`).forEach(r => {
+                        r.closest('.radio-item').classList.remove('selected');
+                    });
+                    // 選択された項目にselectedクラスを追加
+                    item.classList.add('selected');
+                });
+            });
+            
+            // 評価の制御
+            const ratingItems = document.querySelectorAll('.rating-item');
+            ratingItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const rating = this.dataset.rating;
+                    document.getElementById('satisfaction').value = rating;
+                    
+                    // 他の項目からselectedクラスを削除
+                    ratingItems.forEach(r => r.classList.remove('selected'));
+                    // 選択された項目にselectedクラスを追加
+                    this.classList.add('selected');
+                });
+            });
+        });
+        
+        // フォーム送信処理
+        document.getElementById('surveyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 必須項目のチェック
+            const checkedReasons = document.querySelectorAll('input[name="reasons"]:checked');
+            if (checkedReasons.length === 0) {
+                alert('解約理由を1つ以上選択してください。');
+                return;
+            }
+            
+            // フォームを非表示にして、お礼メッセージを表示
+            this.style.display = 'none';
+            document.getElementById('thankYou').style.display = 'block';
+            
+            // 実際のシステムでは、ここでデータをサーバーに送信
+            console.log('Survey submitted');
+        });
+        
+        function acceptOffer() {
+            if (confirm('30日間の無料延長を適用しますか？')) {
+                alert('30日間の無料延長が適用されました！\nサービスを継続してご利用いただけます。');
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>

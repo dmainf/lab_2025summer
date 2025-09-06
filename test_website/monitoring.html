@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>利用実態モニタリング - test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 20px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .card-icon {
+            font-size: 1.5rem;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .trend {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        
+        .trend.up {
+            color: #28a745;
+        }
+        
+        .trend.down {
+            color: #dc3545;
+        }
+        
+        .trend.neutral {
+            color: #ffc107;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .usage-chart {
+            width: 100%;
+            height: 200px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: end;
+            justify-content: space-around;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .chart-bar {
+            background: linear-gradient(180deg, #667eea, #764ba2);
+            border-radius: 4px 4px 0 0;
+            width: 30px;
+            min-height: 10px;
+            position: relative;
+        }
+        
+        .chart-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: #666;
+        }
+        
+        .recommendation-section {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .recommendation-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .recommendation-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+        
+        .recommendation-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+        }
+        
+        .plan-recommendation {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .plan-card {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .plan-card.current {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .plan-card.recommended {
+            border-color: #28a745;
+            background: #f8fff9;
+        }
+        
+        .plan-badge {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .current-badge {
+            background: #667eea;
+            color: white;
+        }
+        
+        .recommended-badge {
+            background: #28a745;
+            color: white;
+        }
+        
+        .plan-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 1rem 0 0.5rem;
+            color: #2c3e50;
+        }
+        
+        .plan-price {
+            font-size: 1.8rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        
+        .plan-match {
+            color: #28a745;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .insights-section {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .insight-item {
+            text-align: center;
+            padding: 1rem;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+        }
+        
+        .insight-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .insight-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+        }
+        
+        .insight-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .plan-recommendation {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← ホームに戻る</a>
+        
+        <div class="header">
+            <h1>利用実態モニタリング</h1>
+            <p class="subtitle">あなたの学習パターンを分析し、最適なプランをご提案します</p>
+        </div>
+        
+        <div class="dashboard">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">月間利用時間</div>
+                    <div class="card-icon">⏰</div>
+                </div>
+                <div class="metric-value" style="color: #667eea;">42.5</div>
+                <div class="metric-label">時間</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 85%"></div>
+                </div>
+                <div class="trend up">↗ 前月比 +15%</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">学習完了率</div>
+                    <div class="card-icon">✅</div>
+                </div>
+                <div class="metric-value" style="color: #28a745;">78%</div>
+                <div class="metric-label">コンテンツ完了率</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 78%"></div>
+                </div>
+                <div class="trend up">↗ 前月比 +8%</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">ログイン頻度</div>
+                    <div class="card-icon">📈</div>
+                </div>
+                <div class="metric-value" style="color: #ffc107;">12</div>
+                <div class="metric-label">日/月</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 40%"></div>
+                </div>
+                <div class="trend down">↘ 前月比 -5%</div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">利用機能数</div>
+                    <div class="card-icon">🛠️</div>
+                </div>
+                <div class="metric-value" style="color: #dc3545;">3</div>
+                <div class="metric-label">/ 8機能</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 38%"></div>
+                </div>
+                <div class="trend neutral">→ 前月と同じ</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">週間利用パターン</div>
+                <div class="card-icon">📊</div>
+            </div>
+            <div class="usage-chart">
+                <div class="chart-bar" style="height: 60px;">
+                    <div class="chart-label">月</div>
+                </div>
+                <div class="chart-bar" style="height: 80px;">
+                    <div class="chart-label">火</div>
+                </div>
+                <div class="chart-bar" style="height: 45px;">
+                    <div class="chart-label">水</div>
+                </div>
+                <div class="chart-bar" style="height: 95px;">
+                    <div class="chart-label">木</div>
+                </div>
+                <div class="chart-bar" style="height: 70px;">
+                    <div class="chart-label">金</div>
+                </div>
+                <div class="chart-bar" style="height: 30px;">
+                    <div class="chart-label">土</div>
+                </div>
+                <div class="chart-bar" style="height: 25px;">
+                    <div class="chart-label">日</div>
+                </div>
+            </div>
+            <p style="text-align: center; color: #666; font-size: 0.9rem;">
+                平日の利用が多く、週末の活用が少ない傾向があります
+            </p>
+        </div>
+        
+        <div class="recommendation-section">
+            <div class="recommendation-header">
+                <div class="recommendation-icon">🎯</div>
+                <div class="recommendation-title">最適プランのご提案</div>
+            </div>
+            <p style="color: #666; margin-bottom: 2rem;">
+                あなたの利用パターンを分析した結果、現在のプランよりもコストパフォーマンスの良いプランをご提案します。
+            </p>
+            
+            <div class="plan-recommendation">
+                <div class="plan-card current">
+                    <div class="plan-badge current-badge">現在のプラン</div>
+                    <div class="plan-name">プレミアムプラン</div>
+                    <div class="plan-price">¥4,980<small>/月</small></div>
+                    <p style="color: #666; margin-bottom: 1rem;">利用率: 38%</p>
+                    <p style="font-size: 0.9rem;">多くの機能を使い切れていません</p>
+                </div>
+                
+                <div class="plan-card recommended">
+                    <div class="plan-badge recommended-badge">おすすめ</div>
+                    <div class="plan-name">ライトプラン</div>
+                    <div class="plan-price">¥1,980<small>/月</small></div>
+                    <div class="plan-match">マッチ度: 92%</div>
+                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">
+                        あなたの利用パターンに最適です
+                    </p>
+                    <button class="btn btn-success" onclick="showPlanChange()">プラン変更</button>
+                </div>
+            </div>
+            
+            <div style="background: #e8f5e8; padding: 1.5rem; border-radius: 8px; margin-top: 1.5rem;">
+                <h4 style="color: #28a745; margin-bottom: 0.5rem;">💰 月額 ¥3,000 の節約が可能です</h4>
+                <p style="color: #28a745;">
+                    ライトプランに変更することで、必要な機能は維持しながら年間 ¥36,000 の節約ができます。
+                </p>
+            </div>
+        </div>
+        
+        <div class="insights-section">
+            <h2 style="color: #2c3e50; margin-bottom: 1rem;">📊 学習インサイト</h2>
+            <p style="color: #666;">あなたの学習効率を最大化するためのヒントです</p>
+            
+            <div class="insights-grid">
+                <div class="insight-item">
+                    <div class="insight-icon">🔥</div>
+                    <div class="insight-value">木曜日</div>
+                    <div class="insight-label">最も集中できる日</div>
+                </div>
+                
+                <div class="insight-item">
+                    <div class="insight-icon">⏰</div>
+                    <div class="insight-value">19:00-21:00</div>
+                    <div class="insight-label">最適学習時間</div>
+                </div>
+                
+                <div class="insight-item">
+                    <div class="insight-icon">📚</div>
+                    <div class="insight-value">動画学習</div>
+                    <div class="insight-label">好みの学習方法</div>
+                </div>
+                
+                <div class="insight-item">
+                    <div class="insight-icon">🎯</div>
+                    <div class="insight-value">45分</div>
+                    <div class="insight-label">平均学習セッション</div>
+                </div>
+            </div>
+            
+            <div style="background: #fff3cd; padding: 1.5rem; border-radius: 8px; margin-top: 2rem;">
+                <h4 style="color: #856404; margin-bottom: 0.5rem;">💡 改善提案</h4>
+                <ul style="color: #856404; padding-left: 1.5rem;">
+                    <li>週末の学習時間を少し増やすと、より効果的です</li>
+                    <li>AI分析機能を活用すると学習効率が向上します</li>
+                    <li>復習機能の利用頻度を上げることをおすすめします</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showPlanChange() {
+            if (confirm('ライトプランに変更しますか？\n\n変更内容:\n・月額料金: ¥4,980 → ¥1,980\n・基本機能はそのまま利用可能\n・次回請求日から適用されます')) {
+                alert('プラン変更の手続きを開始しました。\n詳細は登録メールアドレスにご連絡いたします。');
+                // 実際のシステムでは、プラン変更APIを呼び出す
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            }
+        }
+        
+        // 動的データ更新のシミュレーション
+        function updateMetrics() {
+            // 実際のシステムでは、APIから最新データを取得
+            console.log('Metrics updated');
+        }
+        
+        // 30秒ごとにデータを更新
+        setInterval(updateMetrics, 30000);
+    </script>
+</body>
+</html>
